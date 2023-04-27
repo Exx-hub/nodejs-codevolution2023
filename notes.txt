@@ -1,0 +1,282 @@
+ECMAScript 
+
+- javascript for Netscape browser vs microsoft JScript for internet explorer
+
+-- sometimes incompatible, some websites are best viewed in netscape some are for IE
+
+--- ECMAScript became a standard specification for consistent specification across browsers 
+
+
+Chrome V8 Engine
+
+- javascript cannot be understood by computer
+- javascript engine convers code into machine code
+
+- written in C++
+
+
+JavaScript Runtime
+
+- JavaScript code =>
+- chrome browser
+  - web / browser APIs -> DOM, STORAGE, TIMERS etc
+  - microtask queue and callback / task queue
+   - event loop
+
+- v8 JavaScript engine -> memory, call stack
+
+
+
+What can you build in node js?
+
+- traditional websites
+- backend services like APIs
+- real time applications
+- streaming services
+- CLI tools
+- multiplayer games
+
+
+
+Node JS runtime 
+
+- javascript code => nodejs => dependencies (v8,libuv,crypto etc) => c/c++ features => js library   
+
+
+Modules
+
+- encapsulated and reusable chunk of code that has its own context
+- in node, each file is treated as a separate module
+
+TYPES
+1. local - modules that we create
+2. built in - modules that comes out of the box
+3. third party - written by others but we can use 
+
+
+MODULE WRAPPER
+
+
+*Every module in node gets wrapped in an IIFE under the hood before being loaded
+*IIFE helps keep top-lvel variables scoped to the module rather than global
+*IIFEE wrapper contains 5 parameters
+
+(function (exports, require, modules, __filename, __dirname) {
+  // module ....
+})();
+
+
+-- every module is wrapped with this IIFE with 5 paramets.
+-- hence module.exports is accessible and you can assign functions or variables to it.
+
+
+MODULE CACHING
+
+-- modules are cached when loaded
+-- so calling another instance of superhero returns the changed name
+
+class SuperHero {
+  constructor(name) {
+    this.name = name;
+  }
+
+  getName() {
+    return this.name;
+  }
+
+  setName(newName) {
+    this.name = newName;
+  }
+}
+
+module.exports = new SuperHero("Batman");
+
+// index
+
+const superHero = require("./superHero");
+
+console.log(superHero.getName());
+
+superHero.setName("Deadpool");
+console.log(superHero.getName());
+
+const newSuperHero = require("./superHero");
+console.log(newSuperHero.getName());
+
+
+# if you want a new instance every call 
+
+module.exports = SuperHero;
+
+
+
+// index 
+
+const SuperHero = require("./superHero");
+
+const superHero = new SuperHero("Batman");
+superHero.setName("Bruce Wayne");
+
+console.log(superHero.getName());
+
+const superHero2 = new SuperHero("Superman");
+console.log(superHero2.getName());
+
+
+### IMPORT EXPORT PATTERNS
+
+
+= DETOUR =
+
+> character sets
+
+ASCII and Unicode
+
+> character encoding
+
+ UTF-8
+
+> streams and buffers
+
+- chunks data, moved from one point chunk at a time
+  
+
+> asynchronous javascript
+
+
+### ES MODULES
+
+
+==== BUILT IN MODULES ====
+
+1. Path Module
+
+2. Events Module
+
+3. FS Module
+ - fs promises
+
+4. Http Module
+
+ 
+
+==Streams and Pipes==
+
+
+
+
+======================================
+
+
+LIBUV
+
+- library that handles async non blocking operations in node
+- written in C
+
+how?
+-thread pool and event loop
+
+
+--- node js main thread offloads time consuming tasks to libuv who has a thread pool
+--- libuv has 4 threads
+
+-- increase libuv thread pool size
+-- process.env.UV_THREADPOOL_SIZE = 6;
+
+===========================================================================
+
+ASYNC CODE EXECUTION
+
+1. JAvascript is synchronous, blocking, single-threaded
+
+2. to make async programming possible, we need the help of libuv
+
+
+Memory Heap - when you declare functions and variables, they are stored in the heap
+
+Call Stack - whenever you execute code, functions are PUSHED in to the call stack, and are POPPED off when done.
+           -LIFO => Last in first out 
+
+
+=====================================================
+
+EVENT loop
+
+- it is a C program and part of libuv
+
+
+--event loop execution order--
+
+--> user written synchronous javascript code takes priority over async code that runtime would like to execute
+  -- which means only after the call stack is empty, the event loop comes into picture
+
+synchronous code first then async code -> event loop priority
+
+
+  1. any calbacks in the micro task queues are executed. first, tasks in the next tick queue and ony then
+     tasks in the promise queue
+
+     next tick queues => promise queue
+
+  2. all callbacks within the timer queue are executed
+
+  3. call backs in the micro tasks queues if present are executed. again next tick first then promise
+
+  4. i/o queue
+
+  5. microtask again if present 
+
+  6. check queue
+
+  7. microtask again if present
+
+  8. close queue
+
+  9. microtask again if present
+
+  --- if there are more callbacks, another loop is done, if none anymore, it exits
+
+
+====================================================================================
+====================================================================================
+
+NPM
+
+- world's largest software library
+- software package manager
+
+
+> Package.json
+
+ - npm's configuration file
+ - central place to config your package
+
+
+
+ Building CLI TOOLS
+
+
+===================================
+===================================
+===================================
+
+Cluster Module
+
+ 
+pm2 start no-cluster.js -i 0
+
+--- to automatically cluster for you -- pm2
+
+- enables the creation of child processes (workers) to run simultaneously
+
+- can be used to run mutliple instances of nodejs to distribute workloads
+
+Worker Threads Module
+
+- enables the use of threads that execute javascript in parallel
+- code executed in a worker thread runs in a separate child process preventing it from blocking main app
+
+- allows running multiple application threads within a sinlge node js instance
+
+
+ 
